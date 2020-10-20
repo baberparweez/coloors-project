@@ -9,13 +9,18 @@ class Coloors {
     }
 
     // Colour Generator
+    // generateHex() {
+    //     const letters = "0123456789ABCDEF";
+    //     let hash = "#";
+    //     for (let i = 0; i < 6; i++) {
+    //         hash += letters[Math.floor(Math.random() * 16)];
+    //     }
+    //     return hash;
+    // }
+
     generateHex() {
-        const letters = "0123456789ABCDEF";
-        let hash = "#";
-        for (let i = 0; i < 6; i++) {
-            hash += letters[Math.floor(Math.random() * 16)];
-        }
-        return hash;
+        const hexColour = chroma.random();
+        return hexColour;
     }
 
     randomColours() {
@@ -25,9 +30,20 @@ class Coloors {
 
             // Add the colour to the background
             div.style.backgroundColor = randomColour;
+            hexText.innerText = randomColour;
 
-            console.log(randomColour);
+            // Check for contrast
+            this.checkTextContrast(randomColour, hexText);
         });
+    }
+
+    checkTextContrast(colour, text) {
+        const luminance = chroma(colour).luminance();
+        if (luminance > 0.5) {
+            text.style.color = "black";
+        } else {
+            text.style.color = "white";
+        }
     }
 }
 
