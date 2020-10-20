@@ -34,6 +34,15 @@ class Coloors {
 
             // Check for contrast
             this.checkTextContrast(randomColour, hexText);
+
+            // Initial Colourize Sliders
+            const colour = chroma(randomColour);
+            const sliders = div.querySelectorAll(".sliders input");
+            const hue = sliders[0];
+            const brightness = sliders[1];
+            const saturation = sliders[2];
+
+            this.colourizeSliders(colour, hue, brightness, saturation);
         });
     }
 
@@ -45,9 +54,31 @@ class Coloors {
             text.style.color = "white";
         }
     }
+
+    colourizeSliders(colour, hue, brightness, saturation) {
+        //Scale brightness
+        const midBright = colour.set("hsl.l", 0.5);
+        const scaleBright = chroma.scale(["black", midBright, "white"]);
+
+        // Scale saturation
+        const noSat = colour.set("hsl.s", 0);
+        const fullSat = colour.set("hsl.s", 1);
+        const scaleSat = chroma.scale([noSat, colour, fullSat]);
+
+        // Update input colours
+
+        hue.style.backgroundImage = `linear-gradient(to right, rgb(204, 75, 75), rgb(204, 204, 75), rgb(75, 204, 75), rgb(75, 204, 204), rgb(75, 75, 204), rgb(204, 75, 204), rgb(204, 75, 75)`;
+
+        brightness.style.backgroundImage = `linear-gradient(to right, ${scaleBright(
+            0
+        )}, ${scaleBright(0.5)}, ${scaleBright(1)})`;
+
+        saturation.style.backgroundImage = `linear-gradient(to right, ${scaleSat(
+            0
+        )}, ${scaleSat(1)})`;
+    }
 }
 
 const coloors = new Coloors();
 
 let output = coloors.randomColours();
-console.log(output);

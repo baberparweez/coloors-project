@@ -49,12 +49,12 @@ svg {
     flex-direction: column;
     position: absolute;
     bottom: 0%;
-    opacity: 0;
+    /* opacity: 0; */
     padding: 1rem;
-    pointer-events: none;
+    /* pointer-events: none; */
     width: 80%;
     /* Adjustment class */
-    transform: translateY(100px);
+    /* transform: translateY(100px); */
     transition: all 0.5s ease-in-out;
 }
 
@@ -123,4 +123,13 @@ svg {
     cursor: pointer;
     font-size: 2rem;
     margin: 2rem 0;
+}
+
+input[type="range"] {
+    cursor: pointer;
+    border-radius: 1rem;
+    margin: 1rem 0;
+    position: relative;
+    width: 100%;
+    -webkit-appearance: none;
 }
