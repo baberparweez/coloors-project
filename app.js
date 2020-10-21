@@ -5,7 +5,7 @@ class Coloors {
         this.generateBtn = document.querySelector(".generate");
         this.sliders = document.querySelectorAll('input[type="range"]');
         this.currentHexes = document.querySelectorAll(".colour h2");
-        this.initalColours;
+        this.initialColours;
 
         this.sliders.forEach((slider) => {
             slider.addEventListener("input", this.hslControls);
@@ -35,14 +35,14 @@ class Coloors {
 
     randomColours() {
         // Initial colours
-        this.initalColours = [];
+        this.initialColours = [];
 
         this.colourDivs.forEach((div, index) => {
             const hexText = div.children[0];
             const randomColour = this.generateHex();
 
             // Add hex to array
-            this.initalColours.push(chroma(randomColour).hex());
+            this.initialColours.push(chroma(randomColour).hex());
 
             // Add the colour to the background
             div.style.backgroundColor = randomColour;
@@ -60,6 +60,9 @@ class Coloors {
 
             this.colourizeSliders(colour, hue, brightness, saturation);
         });
+
+        // Reset out inputs
+        this.resetInputs();
     }
 
     checkTextContrast(colour, text) {
@@ -94,6 +97,7 @@ class Coloors {
         )}, ${scaleSat(1)})`;
     }
 
+    // Arrow function is used here to inherit the keyword this from the constructor
     hslControls = (e) => {
         const index =
             e.target.getAttribute("data-bright") ||
@@ -107,7 +111,7 @@ class Coloors {
         const brightness = sliders[1];
         const saturation = sliders[2];
 
-        const bgColour = this.initalColours[index];
+        const bgColour = this.initialColours[index];
 
         let colour = chroma(bgColour)
             .set("hsl.s", saturation.value)
@@ -128,6 +132,36 @@ class Coloors {
         // Check contrast
         this.checkTextContrast(colour, textHex);
     }
+
+    resetInputs = () => {
+        const sliders = document.querySelectorAll(".sliders input");
+
+        sliders.forEach((slider) => {
+            if (slider.name === "hue") {
+                const hueColour = this.initialColours[
+                    slider.getAttribute("data-hue")
+                ];
+                const hueValue = chroma(hueColour).hsl()[0];
+                slider.value = Math.floor(hueValue);
+            }
+
+            if (slider.name === "brightness") {
+                const brightColour = this.initialColours[
+                    slider.getAttribute("data-bright")
+                ];
+                const brightValue = chroma(brightColour).hsl()[2];
+                slider.value = Math.floor(brightValue * 100) / 100;
+            }
+
+            if (slider.name === "saturation") {
+                const satColour = this.initialColours[
+                    slider.getAttribute("data-sat")
+                ];
+                const satValue = chroma(satColour).hsl()[1];
+                slider.value = Math.floor(satValue * 100) / 100;
+            }
+        });
+    };
 }
 
 const coloors = new Coloors();
