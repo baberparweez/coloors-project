@@ -6,6 +6,16 @@ class Coloors {
         this.sliders = document.querySelectorAll('input[type="range"]');
         this.currentHexes = document.querySelectorAll(".colour h2");
         this.initalColours;
+
+        this.sliders.forEach((slider) => {
+            slider.addEventListener("input", this.hslControls);
+        });
+
+        this.colourDivs.forEach((slider, index) => {
+            slider.addEventListener("change", () => {
+                this.updateTextUI(index);
+            });
+        });
     }
 
     // Colour Generator
@@ -76,6 +86,43 @@ class Coloors {
         saturation.style.backgroundImage = `linear-gradient(to right, ${scaleSat(
             0
         )}, ${scaleSat(1)})`;
+    }
+
+    hslControls(e) {
+        const index =
+            e.target.getAttribute("data-bright") ||
+            e.target.getAttribute("data-sat") ||
+            e.target.getAttribute("data-hue");
+
+        let sliders = e.target.parentElement.querySelectorAll(
+            'input[type="range"]'
+        );
+        const hue = sliders[0];
+        const brightness = sliders[1];
+        const saturation = sliders[2];
+
+        // Due to class format, colorDivs[index] doesn't seem to work so I replaced it with a double parentElement
+        const bgColour = this.parentElement.parentElement.querySelector("h2")
+            .innerText;
+
+        let colour = chroma(bgColour)
+            .set("hsl.s", saturation.value)
+            .set("hsl.l", brightness.value)
+            .set("hsl.h", hue.value);
+
+        this.parentElement.parentElement.style.backgroundColor = colour;
+    }
+
+    updateTextUI(index) {
+        const activeDiv = this.colourDivs[index];
+        const colour = chroma(activeDiv.style.backgroundColor);
+        const textHex = activeDiv.querySelector("h2");
+        const icons = activeDiv.querySelectorAll(".controls button");
+
+        textHex.innerText = colour.hex();
+
+        // Check contrast
+        this.checkTextContrast(colour, textHex);
     }
 }
 
