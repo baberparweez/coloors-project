@@ -34,9 +34,15 @@ class Coloors {
     }
 
     randomColours() {
+        // Initial colours
+        this.initalColours = [];
+
         this.colourDivs.forEach((div, index) => {
             const hexText = div.children[0];
             const randomColour = this.generateHex();
+
+            // Add hex to array
+            this.initalColours.push(chroma(randomColour).hex());
 
             // Add the colour to the background
             div.style.backgroundColor = randomColour;
@@ -88,7 +94,7 @@ class Coloors {
         )}, ${scaleSat(1)})`;
     }
 
-    hslControls(e) {
+    hslControls = (e) => {
         const index =
             e.target.getAttribute("data-bright") ||
             e.target.getAttribute("data-sat") ||
@@ -101,17 +107,15 @@ class Coloors {
         const brightness = sliders[1];
         const saturation = sliders[2];
 
-        // Due to class format, colorDivs[index] doesn't seem to work so I replaced it with a double parentElement
-        const bgColour = this.parentElement.parentElement.querySelector("h2")
-            .innerText;
+        const bgColour = this.initalColours[index];
 
         let colour = chroma(bgColour)
             .set("hsl.s", saturation.value)
             .set("hsl.l", brightness.value)
             .set("hsl.h", hue.value);
 
-        this.parentElement.parentElement.style.backgroundColor = colour;
-    }
+        this.colourDivs[index].style.backgroundColor = colour;
+    };
 
     updateTextUI(index) {
         const activeDiv = this.colourDivs[index];
