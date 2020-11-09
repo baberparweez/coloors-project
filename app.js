@@ -5,8 +5,13 @@ class Coloors {
         this.generateBtn = document.querySelector(".generate");
         this.sliders = document.querySelectorAll('input[type="range"]');
         this.currentHexes = document.querySelectorAll(".colour h2");
+        this.popup = document.querySelector(".copy-container");
         this.initialColours;
 
+        this.eventListeners();
+    }
+
+    eventListeners() {
         this.sliders.forEach((slider) => {
             slider.addEventListener("input", this.hslControls);
         });
@@ -15,6 +20,18 @@ class Coloors {
             slider.addEventListener("change", () => {
                 this.updateTextUI(index);
             });
+        });
+
+        this.currentHexes.forEach((hex) => {
+            hex.addEventListener("click", () => {
+                this.copyToClipboard(hex);
+            });
+        });
+
+        this.popup.addEventListener("transitionend", () => {
+            const popupBox = this.popup.children[0];
+            this.popup.classList.remove("active");
+            popupBox.classList.remove("active");
         });
     }
 
@@ -119,6 +136,9 @@ class Coloors {
             .set("hsl.h", hue.value);
 
         this.colourDivs[index].style.backgroundColor = colour;
+
+        // Colourize inputs/sliders
+        this.colourizeSliders(colour, hue, brightness, saturation);
     };
 
     updateTextUI(index) {
@@ -133,7 +153,7 @@ class Coloors {
         this.checkTextContrast(colour, textHex);
     }
 
-    resetInputs = () => {
+    resetInputs() {
         const sliders = document.querySelectorAll(".sliders input");
 
         sliders.forEach((slider) => {
@@ -161,7 +181,21 @@ class Coloors {
                 slider.value = Math.floor(satValue * 100) / 100;
             }
         });
-    };
+    }
+
+    copyToClipboard(hex) {
+        const el = document.createElement("textarea");
+        el.value = hex.innerText;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+
+        // Pop up animation
+        const popupBox = this.popup.children[0];
+        this.popup.classList.add("active");
+        popupBox.classList.add("active");
+    }
 }
 
 const coloors = new Coloors();
