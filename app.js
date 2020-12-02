@@ -6,12 +6,18 @@ class Coloors {
         this.sliders = document.querySelectorAll('input[type="range"]');
         this.currentHexes = document.querySelectorAll(".colour h2");
         this.popup = document.querySelector(".copy-container");
+        this.adjustBtn = document.querySelectorAll(".adjust");
+        this.lockBtn = document.querySelectorAll(".lock");
+        this.closeAdjustments = document.querySelectorAll(".close-adjustment");
+        this.sliderContainers = document.querySelectorAll(".sliders");
         this.initialColours;
 
         this.eventListeners();
     }
 
     eventListeners() {
+        this.generateBtn.addEventListener("click", this.randomColours);
+
         this.sliders.forEach((slider) => {
             slider.addEventListener("input", this.hslControls);
         });
@@ -33,6 +39,24 @@ class Coloors {
             this.popup.classList.remove("active");
             popupBox.classList.remove("active");
         });
+
+        this.adjustBtn.forEach((button, index) => {
+            button.addEventListener("click", () => {
+                this.openAdjustmentPanel(index);
+            });
+        });
+
+        this.closeAdjustments.forEach((button, index) => {
+            button.addEventListener("click", () => {
+                this.closeAdjustmentPanel(index);
+            });
+        });
+
+        this.lockBtn.forEach((button, index) => {
+            button.addEventListener("click", () => {
+                this.lockIcon(index);
+            });
+        });
     }
 
     // Colour Generator
@@ -50,7 +74,7 @@ class Coloors {
         return hexColour;
     }
 
-    randomColours() {
+    randomColours = () => {
         // Initial colours
         this.initialColours = [];
 
@@ -59,7 +83,12 @@ class Coloors {
             const randomColour = this.generateHex();
 
             // Add hex to array
-            this.initialColours.push(chroma(randomColour).hex());
+            if (div.classList.contains("locked")) {
+                this.initialColours.push(hexText.innerText);
+                return;
+            } else {
+                this.initialColours.push(chroma(randomColour).hex());
+            }
 
             // Add the colour to the background
             div.style.backgroundColor = randomColour;
@@ -80,7 +109,16 @@ class Coloors {
 
         // Reset out inputs
         this.resetInputs();
-    }
+
+        // Check for button contrast
+        this.adjustBtn.forEach((button, index) => {
+            this.checkTextContrast(this.initialColours[index], button);
+            this.checkTextContrast(
+                this.initialColours[index],
+                this.lockBtn[index]
+            );
+        });
+    };
 
     checkTextContrast(colour, text) {
         const luminance = chroma(colour).luminance();
@@ -195,6 +233,20 @@ class Coloors {
         const popupBox = this.popup.children[0];
         this.popup.classList.add("active");
         popupBox.classList.add("active");
+    }
+
+    openAdjustmentPanel(index) {
+        this.sliderContainers[index].classList.toggle("active");
+    }
+
+    closeAdjustmentPanel(index) {
+        this.sliderContainers[index].classList.remove("active");
+    }
+
+    lockIcon(index) {
+        this.colourDivs[index].classList.toggle("locked");
+        this.lockBtn[index].children[0].classList.toggle("fa-lock-open");
+        this.lockBtn[index].children[0].classList.toggle("fa-lock");
     }
 }
 
